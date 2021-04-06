@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, TextInput, FlatList } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, Text, TextInput, FlatList, Modal } from 'react-native';
 
 import api from '../services/axios';
 
@@ -16,14 +16,48 @@ const Lista = ({navigation}) => {
           console.log("DEU RUIM" + error);
         }
       }
-    
+      const [isRender, setisRender] = useState(false);
+      const [isModalVisible, setisModalVisible] = useState(false);
+      const [inputText, setinputText] = useState();
+      const [editItem, seteditItem] = useState();
+
+      
+      const onPressItem = (item) => {
+        setisModalVisible(true);
+        setinputText(item.text)
+        seteditItem(item)
+         console.log(editItem)
+         console.log(inputText)
+      }
+
+      const handleEditItem = (editItem) => {
+        const newData = tarefas.map(item =>{
+          if(item.id == editItem){
+            item.text = inputText;
+            return item
+          }
+          return item;
+        })
+        setTarefas(newData)
+        setisRender(!isRender);
+      }
+
+      const onPressSaveEdit = () => {
+        console.log(editItem)
+        handleEditItem(editItem); //save input text to data
+        setisModalVisible(false);
+
+      }
+
       
     
       const TextTarefa = ({item}) => {
         return(
-          <View>
-            <Text style={styles.tarefaNome}>{item.nome} - {item.tipo}</Text>
+          <TouchableOpacity onPress={() => onPressItem(item)}>
+          <View style={styles.row}>
+            <Text>{item.nome} - {item.dataprogramada} - {item.status} </Text>
           </View>
+          </TouchableOpacity>
         )
       }
     
@@ -40,35 +74,74 @@ const Lista = ({navigation}) => {
                 <Text style={styles.buttonText}>Atualizar</Text>
               </TouchableOpacity>
             </View>
-            <Text style={styles.tituloLista}>Listagem de Tarefas</Text>
+            <Text style={styles.tituloLista}>Tarefas</Text>
             <FlatList
             data={tarefas}
             renderItem={TextTarefa}
             keyExtractor={ tarefa => tarefa.nome }
+            extraData={isRender}
             
             
             ></FlatList>
+            <Modal animationType='fade'
+                  visible={isModalVisible}
+                  onRequestClose={() => setisModalVisible(false)}
+            >
+              <View style={styles.modalView}>
+                <Text> Edite a tarefa</Text>
+                <TextInput 
+                onChange={(text) => setinputText(text)}
+                defaultValue={inputText}
+                editable={true}
+                multiline={false}
+                maxLength={200}
+                style={styles.input}
+                placeholder="Novo nome da tarefa" placeholderTextColor="#000"
+                ></TextInput>
+                <TextInput 
+                onChange={(text) => setinputText(text)}
+                defaultValue={inputText}
+                editable={true}
+                multiline={false}
+                maxLength={200}
+                style={styles.input}
+                placeholder="Data Programada" placeholderTextColor="#000"
+                ></TextInput>
+                <TextInput 
+                onChange={(text) => setinputText(text)}
+                defaultValue={inputText}
+                editable={true}
+                multiline={false}
+                maxLength={200}
+                style={styles.input}
+                placeholder="Status" placeholderTextColor="#000"
+                ></TextInput>
+                <TouchableOpacity onPress={() => onPressSaveEdit()} style={styles.touchableSave}>
+                  <Text style={styles.text}>Save</Text>
+                </TouchableOpacity>
+
+              </View>
+            </Modal>
           </View>
         </>
       );
 
-
-
-
-
-
-
-    // return (
-    //     <View style={styles.container}>
-    //         <TouchableOpacity style={styles.button} onPress={() => {
-    //             navigation.navigate('Cadastro', { name: 'TEste123' })
-    //         }}>
-    //             <Text style={styles.buttonText}>Click me</Text>
-    //         </TouchableOpacity>
-    //     </View>
-    // );
 }
 const styles = StyleSheet.create({
+    modalView:{
+      flex: 1,
+      alignItems: 'center',
+      justifyContent: 'center'
+    },
+    row: {
+      flex: 1,
+      paddingVertical: 25,
+      paddingHorizontal: 15,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      borderBottomWidth: 1,
+      borderBottomColor: 'white'
+    },
     container: {
       flex: 1,
       borderColor: 'blue',
@@ -76,6 +149,7 @@ const styles = StyleSheet.create({
       alignContent: 'center',
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundColor: '#CFCFCF'
   
     },
     header: {
@@ -92,27 +166,22 @@ const styles = StyleSheet.create({
       paddingLeft: 20
     },
     button: {
-      borderColor: '#ffd700',
+      borderColor: '#00ff40',
       borderWidth: 1,
-      borderRadius: 1,
-      backgroundColor: '#ffd700',
-      width: 100,
-      height: 25,
+      borderRadius: 10,
+      backgroundColor: '#00ff40',
+      width: 150,
+      height: 40,
       alignItems: 'center',
       marginTop: 15,
     },
     buttonText:{
-      color:"#000"
-    },
-    cervejaNome: {
-      borderColor: '#9e9e9e',
-      borderTopWidth: 1,
-      paddingVertical: 20,
-      width: 200,
-      textAlign: 'center'
+      color:"#000",
+      marginTop: 8,
+      fontWeight: 'bold'
     },
     tituloLista:{
-      fontSize: 24,
+      fontSize: 25,
       marginTop: 30,
       marginBottom: 20
     }
