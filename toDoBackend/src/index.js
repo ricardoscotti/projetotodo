@@ -11,7 +11,7 @@ const porta = 3333;
 app.use(express.json());
 app.get('/tarefas', TarefaController.index);
 app.post('/tarefas', TarefaController.create);
-app.delete('/tarefas/:nome', TarefaController.delete);
+app.delete('/tarefas/:id', TarefaController.delete);
 app.put('/tarefas/:nome', TarefaController.update);
 
 app.listen(porta, () => {

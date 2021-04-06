@@ -33,20 +33,12 @@
    }
 
    async delete (req,res){
-     TarefaSchema.find({"nome": req.params.nome})
-     .then((result) => {
-       if (result){
-         TarefaSchema.deleteOne({"nome": req.params.nome})
-         .catch((error) => {
-           console.log("error")
-         })}
-       console.log(result)
-       return res.json(result)
-     })
-     .catch(error =>{
-       console.log(error)
-       return res.json({"mensagem": 'Não deletou'})
-     } )
+    try{
+      const tarefaDeletada = await TarefaSchema.findByIdAndRemove({_id: req.params.id})
+      return res.send(tarefaDeletada)
+    }catch(err){
+      return res.status(400).send({err: 'erro', erro})
+    }
    }
 
    async update(req, res){
