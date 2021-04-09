@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text, TextInput } from 'react-native';
 import { color } from 'react-native-reanimated';
 
 import api from '../services/axios';
+import { TarefaContext } from '../TarefasContext';
 
 const Cadastro = ({navigation}) => {
 
@@ -11,21 +12,23 @@ const Cadastro = ({navigation}) => {
     const [nomeTarefa, setNomeTarefa] = useState("");
     const [dataprogramada, setDataprogramada] = useState("");
     const [status, setStatus] = useState("");
-
+    const {getTarefa} = useContext(TarefaContext)
     const createTarefa = async () => {
-    
         if (nomeTarefa && dataprogramada && status){
           try{
             const response = await api.post('/tarefas', {"nome": nomeTarefa, "dataprogramada": dataprogramada, "status": status});
             console.log(JSON.stringify(response.data));
+            await getTarefa()
+            navigation.navigate('Home')
           } catch (error) {
             console.log("DEU RUIM" + error);
           }
         } else {
           console.log("Vazio")
         }
-      }
-
+        
+    }
+    
       return(
         <>
           <View style={styles.container}>
@@ -38,7 +41,7 @@ const Cadastro = ({navigation}) => {
             <View>
             <TouchableOpacity style={styles.button} onPress={createTarefa}>
                 <Text style={styles.buttonText}>Criar</Text>
-              </TouchableOpacity>
+            </TouchableOpacity>
             </View>
             
           </View>

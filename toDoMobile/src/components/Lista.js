@@ -1,61 +1,53 @@
-import React, { useState } from 'react';
-import { StyleSheet, TouchableOpacity, View, Text, TextInput, FlatList, Modal } from 'react-native';
-
+import React, { useContext, useEffect, useState } from 'react';
+import { StyleSheet, TouchableOpacity, View, Text, TextInput, FlatList, Modal, Alert } from 'react-native';
 import api from '../services/axios';
+import {TarefaContext} from '../TarefasContext'
+
 
 const Lista = ({navigation}) => {
-
-      const [tarefas, setTarefas] = useState();
-    
-      const getTarefas = async () => {
-        try{
-          const response = await api.get('/tarefas');
-          console.log(JSON.stringify(response));
-          setTarefas(response.data);
-        } catch (error) {
-          console.log("DEU RUIM" + error);
+      const {tarefas, getTarefa} = useContext(TarefaContext)
+      const [isModalVisible, setisModalVisible] = useState(false);
+      const [editItem, seteditItem] = useState({});
+      const [novoNome, setNovoNome] = useState('')
+      const [novoData, setNovoData]= useState('')
+      const [novoStatus, setNovoStatus] = useState('')
+      useEffect(()=>{
+        getTarefa()
+      },[])  
+      const onPressItem = (tarefa) => {
+        setisModalVisible(true);
+        if(tarefa.item){
+          seteditItem(tarefa.item)
+          setNovoNome(tarefa.item.nome)
+          setNovoData(tarefa.item.dataprogramada)
+          setNovoStatus(tarefa.item.status)
         }
       }
-      const [isRender, setisRender] = useState(false);
-      const [isModalVisible, setisModalVisible] = useState(false);
-      const [inputText, setinputText] = useState();
-      const [editItem, seteditItem] = useState();
-
-      
-      const onPressItem = (item) => {
-        setisModalVisible(true);
-        setinputText(item.text)
-        seteditItem(item)
-         console.log(editItem)
-         console.log(inputText)
+      const deleteTarefa = async (id) => {
+        try{
+          const response = await api.delete(`/tarefas/${id}`)
+          const data = response.data
+          await getTarefa()
+          setisModalVisible(false)
+        }catch(e){
+          alert('ERRO', e)
+        }
       }
-
-      const handleEditItem = (editItem) => {
-        const newData = tarefas.map(item =>{
-          if(item.id == editItem){
-            item.text = inputText;
-            return item
-          }
-          return item;
-        })
-        setTarefas(newData)
-        setisRender(!isRender);
+      const confirmaDelete =  () => {
+        if(editItem._id){
+          const apagar = Alert.alert('Alerta',
+          `Apagar a tarefa ${editItem.nome}?`,
+          [
+            {text: 'NO', style: 'cancel'},
+            {text: 'YES', onPress: () => deleteTarefa(editItem._id)},
+          ])
+        }
       }
-
-      const onPressSaveEdit = () => {
-        console.log(editItem)
-        handleEditItem(editItem); //save input text to data
-        setisModalVisible(false);
-
-      }
-
-      
-    
-      const TextTarefa = ({item}) => {
+      const TextTarefa = (tarefa) => {
         return(
-          <TouchableOpacity onPress={() => onPressItem(item)}>
+          <TouchableOpacity onPress={() => onPressItem(tarefa)}>
           <View style={styles.row}>
-            <Text>{item.nome} - {item.dataprogramada} - {item.status} </Text>
+            <Text>{tarefa.item.nome} - {tarefa.item.dataprogramada} - {tarefa.item.status} </Text>
           </View>
           </TouchableOpacity>
         )
@@ -66,22 +58,16 @@ const Lista = ({navigation}) => {
           <View style={styles.container}>
             <Text style={styles.header}>To Do List</Text>
             
-            <View>
+          <View>
             <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Cadastro')}>
-                <Text style={styles.buttonText}>Cadastrar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={getTarefas}>
-                <Text style={styles.buttonText}>Atualizar</Text>
-              </TouchableOpacity>
-            </View>
+              <Text style={styles.buttonText}>Cadastrar</Text>
+            </TouchableOpacity>
+          </View>
             <Text style={styles.tituloLista}>Tarefas</Text>
             <FlatList
             data={tarefas}
             renderItem={TextTarefa}
             keyExtractor={ tarefa => tarefa.nome }
-            extraData={isRender}
-            
-            
             ></FlatList>
             <Modal animationType='fade'
                   visible={isModalVisible}
@@ -90,8 +76,8 @@ const Lista = ({navigation}) => {
               <View style={styles.modalView}>
                 <Text> Edite a tarefa</Text>
                 <TextInput 
+                value={novoNome}
                 onChange={(text) => setinputText(text)}
-                defaultValue={inputText}
                 editable={true}
                 multiline={false}
                 maxLength={200}
@@ -99,8 +85,8 @@ const Lista = ({navigation}) => {
                 placeholder="Novo nome da tarefa" placeholderTextColor="#000"
                 ></TextInput>
                 <TextInput 
+                value={novoData}
                 onChange={(text) => setinputText(text)}
-                defaultValue={inputText}
                 editable={true}
                 multiline={false}
                 maxLength={200}
@@ -108,18 +94,20 @@ const Lista = ({navigation}) => {
                 placeholder="Data Programada" placeholderTextColor="#000"
                 ></TextInput>
                 <TextInput 
+                value={novoStatus}
                 onChange={(text) => setinputText(text)}
-                defaultValue={inputText}
                 editable={true}
                 multiline={false}
                 maxLength={200}
                 style={styles.input}
                 placeholder="Status" placeholderTextColor="#000"
                 ></TextInput>
-                <TouchableOpacity onPress={() => onPressSaveEdit()} style={styles.touchableSave}>
+                <TouchableOpacity  style={styles.touchableSave}>
                   <Text style={styles.text}>Save</Text>
                 </TouchableOpacity>
-
+                <TouchableOpacity onPress={confirmaDelete}  style={styles.touchableSave}>
+                  <Text style={styles.text}>Apagar</Text>
+                </TouchableOpacity>
               </View>
             </Modal>
           </View>
