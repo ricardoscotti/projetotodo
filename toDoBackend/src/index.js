@@ -12,7 +12,7 @@ app.use(express.json());
 app.get('/tarefas', TarefaController.index);
 app.post('/tarefas', TarefaController.create);
 app.delete('/tarefas/:id', TarefaController.delete);
-app.put('/tarefas/:nome', TarefaController.update);
+app.put('/tarefas/:id', TarefaController.update);
 
 app.listen(porta, () => {
     console.log("logado na portass" + porta)  

@@ -8,9 +8,9 @@ const Lista = ({navigation}) => {
       const {tarefas, getTarefa} = useContext(TarefaContext)
       const [isModalVisible, setisModalVisible] = useState(false);
       const [editItem, seteditItem] = useState({});
-      const [novoNome, setNovoNome] = useState('')
-      const [novoData, setNovoData]= useState('')
-      const [novoStatus, setNovoStatus] = useState('')
+      const [novoNome, setNovoNome] = useState("")
+      const [novoData, setNovoData]= useState("")
+      const [novoStatus, setNovoStatus] = useState("")
       useEffect(()=>{
         getTarefa()
       },[])  
@@ -18,11 +18,21 @@ const Lista = ({navigation}) => {
         setisModalVisible(true);
         if(tarefa.item){
           seteditItem(tarefa.item)
-          setNovoNome(tarefa.item.nome)
-          setNovoData(tarefa.item.dataprogramada)
-          setNovoStatus(tarefa.item.status)
         }
       }
+
+      const updateTarefa = async () => {
+          try{
+            const response = await api.put(`/tarefas/${editItem._id}`, {"nome": novoNome, "dataprogramada": novoData, "status": novoStatus});
+            console.log(JSON.stringify(response.data));
+            await getTarefa()
+            setisModalVisible(false)
+          } catch (error) {
+            console.log("DEU RUIM" + error);
+          }
+        
+    }
+
       const deleteTarefa = async (id) => {
         try{
           const response = await api.delete(`/tarefas/${id}`)
@@ -34,6 +44,7 @@ const Lista = ({navigation}) => {
         }
       }
       const confirmaDelete =  () => {
+        console.log(editItem._id)
         if(editItem._id){
           const apagar = Alert.alert('Alerta',
           `Apagar a tarefa ${editItem.nome}?`,
@@ -74,19 +85,21 @@ const Lista = ({navigation}) => {
                   onRequestClose={() => setisModalVisible(false)}
             >
               <View style={styles.modalView}>
-                <Text> Edite a tarefa</Text>
+                <Text style={styles.text}> Edite a tarefa</Text>
                 <TextInput 
-                value={novoNome}
-                onChange={(text) => setinputText(text)}
+                //value={novoNome}
+                onChangeText={item => {setNovoNome(item)}}
                 editable={true}
                 multiline={false}
                 maxLength={200}
                 style={styles.input}
                 placeholder="Novo nome da tarefa" placeholderTextColor="#000"
+                style={styles.input}
+
                 ></TextInput>
                 <TextInput 
-                value={novoData}
-                onChange={(text) => setinputText(text)}
+                //value={novoData}
+                onChangeText={item => {setNovoData(item)}}
                 editable={true}
                 multiline={false}
                 maxLength={200}
@@ -94,15 +107,15 @@ const Lista = ({navigation}) => {
                 placeholder="Data Programada" placeholderTextColor="#000"
                 ></TextInput>
                 <TextInput 
-                value={novoStatus}
-                onChange={(text) => setinputText(text)}
+                //value={novoStatus}
+                onChangeText={item => {setNovoStatus(item)}}
                 editable={true}
-                multiline={false}
+                multiline={false} 
                 maxLength={200}
                 style={styles.input}
                 placeholder="Status" placeholderTextColor="#000"
                 ></TextInput>
-                <TouchableOpacity  style={styles.touchableSave}>
+                <TouchableOpacity  style={styles.touchableSave} onPress={updateTarefa}>
                   <Text style={styles.text}>Save</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={confirmaDelete}  style={styles.touchableSave}>
@@ -116,10 +129,26 @@ const Lista = ({navigation}) => {
 
 }
 const styles = StyleSheet.create({
+    text:{
+      color:"#000",
+      marginTop: 8,
+      fontWeight: 'bold'
+    },
+    touchableSave:{
+      borderColor: '#00ff40',
+      borderWidth: 1,
+      borderRadius: 10,
+      backgroundColor: '#00ff40',
+      width: 150,
+      height: 40,
+      alignItems: 'center',
+      marginTop: 15,
+    },
     modalView:{
       flex: 1,
       alignItems: 'center',
-      justifyContent: 'center'
+      justifyContent: 'center',
+      backgroundColor: '#CFCFCF'
     },
     row: {
       flex: 1,
@@ -151,7 +180,8 @@ const styles = StyleSheet.create({
       borderColor:'black',
       borderWidth: 1,
       borderRadius: 20,
-      paddingLeft: 20
+      paddingLeft: 20,
+      color: '#000000'
     },
     button: {
       borderColor: '#00ff40',

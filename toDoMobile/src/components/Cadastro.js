@@ -57,6 +57,7 @@ const styles = StyleSheet.create({
       alignContent: 'center',
       justifyContent: 'center',
       alignItems: 'center',
+      backgroundColor: '#CFCFCF'
   
     },
     header: {
@@ -76,17 +77,19 @@ const styles = StyleSheet.create({
       
     },
     button: {
-      borderColor: '#ffd700',
+      borderColor: '#00ff40',
       borderWidth: 1,
-      borderRadius: 1,
-      backgroundColor: '#ffd700',
-      width: 100,
-      height: 25,
+      borderRadius: 10,
+      backgroundColor: '#00ff40',
+      width: 150,
+      height: 40,
       alignItems: 'center',
       marginTop: 15,
     },
     buttonText:{
-      color:"#000"
+      color:"#000",
+      marginTop: 8,
+      fontWeight: 'bold'
     },
     cervejaNome: {
       borderColor: '#9e9e9e',

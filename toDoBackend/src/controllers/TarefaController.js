@@ -42,15 +42,12 @@
    }
 
    async update(req, res){
-    const tarefas = await TarefaSchema.findOneAndUpdate({"nome": req.params.nome}, req.body)
-    .catch(error => console.log(error));
-
-    console.log(tarefas);
-
-
-    return res.json(tarefas) 
-   }
-    
- }
+     try{
+    const tarefass = await TarefaSchema.findByIdAndUpdate({_id: req.params.id}, req.body)
+    return res.send(tarefass)
+     }catch(err){
+      return res.status(400).send({err: 'erro', erro})
+      }}}
+        
 
  export default new TarefaController();  
