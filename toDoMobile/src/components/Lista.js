@@ -3,6 +3,9 @@ import { StyleSheet, TouchableOpacity, View, Text, TextInput, FlatList, Modal, A
 import api from '../services/axios';
 import {TarefaContext} from '../TarefasContext'
 
+import Datepicker from 'react-native-datepicker'
+import {Picker} from '@react-native-picker/picker'
+
 
 const Lista = ({navigation}) => {
       const {tarefas, getTarefa} = useContext(TarefaContext)
@@ -14,6 +17,17 @@ const Lista = ({navigation}) => {
       useEffect(()=>{
         getTarefa()
       },[])  
+      
+      const changeDate = (valor) => {
+        setNovoData(valor)
+        console.log(dataprogramada)
+        }
+      
+        const definiStatus2 = (valor) => {
+          setNovoStatus(valor)
+          console.log(novoStatus)
+          }
+      
       const onPressItem = (tarefa) => {
         setisModalVisible(true);
         if(tarefa.item){
@@ -22,6 +36,7 @@ const Lista = ({navigation}) => {
       }
 
       const updateTarefa = async () => {
+        if (novoNome && novoData && novoStatus && novoStatus != "0"){
           try{
             const response = await api.put(`/tarefas/${editItem._id}`, {"nome": novoNome, "dataprogramada": novoData, "status": novoStatus});
             console.log(JSON.stringify(response.data));
@@ -30,6 +45,9 @@ const Lista = ({navigation}) => {
           } catch (error) {
             console.log("DEU RUIM" + error);
           }
+        }else{
+          alert("Informe todos os campos")
+        }
         
     }
 
@@ -97,7 +115,22 @@ const Lista = ({navigation}) => {
                 style={styles.input}
 
                 ></TextInput>
-                <TextInput 
+                <Datepicker 
+              format="DD/MM/YYYY"
+              style={styles.dateComponente}
+              onDateChange={changeDate}
+              date={novoData}
+            />
+            <Picker
+                selectedValue="Escolha o Status"
+                onValueChange={definiStatus2}
+                style={{height: 100, width: 300}}
+            >
+              <Picker.Item label="Defina o Status" value="0" />
+              <Picker.Item label="Pendente" value="Pendente" />
+              <Picker.Item label="Finalizado" value="Finalizado" />
+            </Picker>
+                {/*<TextInput 
                 //value={novoData}
                 onChangeText={item => {setNovoData(item)}}
                 editable={true}
@@ -105,8 +138,8 @@ const Lista = ({navigation}) => {
                 maxLength={200}
                 style={styles.input}
                 placeholder="Data Programada" placeholderTextColor="#000"
-                ></TextInput>
-                <TextInput 
+                ></TextInput>*/}
+                {/*<TextInput 
                 //value={novoStatus}
                 onChangeText={item => {setNovoStatus(item)}}
                 editable={true}
@@ -114,7 +147,7 @@ const Lista = ({navigation}) => {
                 maxLength={200}
                 style={styles.input}
                 placeholder="Status" placeholderTextColor="#000"
-                ></TextInput>
+                ></TextInput>*/}
                 <TouchableOpacity  style={styles.touchableSave} onPress={updateTarefa}>
                   <Text style={styles.text}>Save</Text>
                 </TouchableOpacity>
@@ -129,6 +162,9 @@ const Lista = ({navigation}) => {
 
 }
 const styles = StyleSheet.create({
+  dateComponente: {
+    width: 190,
+  },
     text:{
       color:"#000",
       marginTop: 8,

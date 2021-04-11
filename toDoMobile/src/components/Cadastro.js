@@ -2,6 +2,9 @@ import React, { useContext, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View, Text, TextInput } from 'react-native';
 import { color } from 'react-native-reanimated';
 
+import Datepicker from 'react-native-datepicker';
+import {Picker} from '@react-native-picker/picker'
+
 import api from '../services/axios';
 import { TarefaContext } from '../TarefasContext';
 
@@ -13,8 +16,20 @@ const Cadastro = ({navigation}) => {
     const [dataprogramada, setDataprogramada] = useState("");
     const [status, setStatus] = useState("");
     const {getTarefa} = useContext(TarefaContext)
+
+    const changeDate2 = (valor) => {
+      setDataprogramada(valor)
+      console.log(dataprogramada)
+      }
+
+      const definiStatus = (valor) => {
+        setStatus(valor)
+        console.log(status)
+        }
+
+
     const createTarefa = async () => {
-        if (nomeTarefa && dataprogramada && status){
+        if (nomeTarefa && dataprogramada && status && status != "0"){
           try{
             const response = await api.post('/tarefas', {"nome": nomeTarefa, "dataprogramada": dataprogramada, "status": status});
             console.log(JSON.stringify(response.data));
@@ -25,6 +40,7 @@ const Cadastro = ({navigation}) => {
           }
         } else {
           console.log("Vazio")
+          alert("Informe todos os campos")
         }
         
     }
@@ -36,8 +52,26 @@ const Cadastro = ({navigation}) => {
             <TextInput placeholder="Nome da Tarefa" placeholderTextColor="#000" style={styles.input} value={nomeTarefa} onChangeText={item => {
               setNomeTarefa(item)
               }} />
-            <TextInput placeholder="Data programada" placeholderTextColor="#000" style={styles.input} value={dataprogramada} onChangeText={item => {setDataprogramada(item)}} />
-            <TextInput placeholder="Status" placeholderTextColor="#000" style={styles.input} value={status} onChangeText={item => {setStatus(item)}} />
+            <Datepicker 
+              format="DD/MM/YYYY"
+              style={styles.dateComponente}
+              onDateChange={changeDate2}
+              date={dataprogramada}
+            />
+
+            <Picker
+                selectedValue="Escolha o Status"
+                onValueChange={definiStatus}
+                style={{height: 100, width: 300}}
+            >
+              <Picker.Item label="Defina o Status" value="0" />
+              <Picker.Item label="Pendente" value="Pendente" />
+              <Picker.Item label="Finalizado" value="Finalizado" />
+            </Picker>
+
+            {/*<TextInput placeholder="Data programada" placeholderTextColor="#000" style={styles.input} value={dataprogramada} onChangeText={item => {setDataprogramada(item)}} />*/}
+            {/*<TextInput placeholder="Status" placeholderTextColor="#000" style={styles.input} value={status} onChangeText={item => {setStatus(item)}} />*/}
+
             <View>
             <TouchableOpacity style={styles.button} onPress={createTarefa}>
                 <Text style={styles.buttonText}>Criar</Text>
@@ -50,6 +84,9 @@ const Cadastro = ({navigation}) => {
 
 }
 const styles = StyleSheet.create({
+    dateComponente: {
+      width: 190,
+    },
     container: {
       flex: 1,
       borderColor: 'blue',
