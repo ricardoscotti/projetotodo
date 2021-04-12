@@ -8,7 +8,10 @@ const TarefaStorage = ({children}) => {
     const [loading, setLoading]  = useState(false)
     const updateData =  (t) => {
         const dataAtual = new Date()
-        console.log(dataAtual)
+        dataAtual.setMilliseconds(0)
+        dataAtual.setMinutes(0)
+        dataAtual.setSeconds(0)
+        dataAtual.setHours(0)
         if(t){
             t.forEach((item)=>{
                 const d = item.dataprogramada.split('/')
