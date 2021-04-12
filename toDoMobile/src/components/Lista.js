@@ -121,7 +121,7 @@ const Lista = ({navigation}) => {
               <View style={styles.modalView}>
                 <Text style={styles.text}> Edite a tarefa</Text>
                 <TextInput 
-                value={editItem.nome}
+                value={novoNome}
                 onChangeText={item => {setNovoNome(item)}}
                 editable={true}
                 multiline={false}
@@ -135,10 +135,10 @@ const Lista = ({navigation}) => {
               format="DD/MM/YYYY"
               style={styles.dateComponente}
               onDateChange={changeDate}
-              date={editItem.dataprogramada}
+              date={novoData}
             />
             <Picker
-                selectedValue={editItem.status}
+                selectedValue={novoStatus}
                 onValueChange={definiStatus2}
                 style={{height: 100, width: 300}}
                 
