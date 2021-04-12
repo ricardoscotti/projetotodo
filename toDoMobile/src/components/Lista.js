@@ -8,19 +8,19 @@ import {Picker} from '@react-native-picker/picker'
 
 
 const Lista = ({navigation}) => {
-      const {tarefas, getTarefa} = useContext(TarefaContext)
+      
+      const {tarefas, getTarefa, updateData} = useContext(TarefaContext)
       const [isModalVisible, setisModalVisible] = useState(false);
       const [editItem, seteditItem] = useState({});
-      const [novoNome, setNovoNome] = useState("")
-      const [novoData, setNovoData]= useState("")
-      const [novoStatus, setNovoStatus] = useState("")
+      const [novoNome, setNovoNome] = useState('')
+      const [novoData, setNovoData]= useState('')
+      const [novoStatus, setNovoStatus] = useState('')
       useEffect(()=>{
         getTarefa()
       },[])  
       
       const changeDate = (valor) => {
         setNovoData(valor)
-        console.log(dataprogramada)
         }
       
         const definiStatus2 = (valor) => {
@@ -32,21 +32,37 @@ const Lista = ({navigation}) => {
         setisModalVisible(true);
         if(tarefa.item){
           seteditItem(tarefa.item)
+          setNovoNome(tarefa.item.nome)
+          setNovoData(tarefa.item.dataprogramada)
+          setNovoStatus(tarefa.item.status)
         }
       }
 
       const updateTarefa = async () => {
-        if (novoNome && novoData && novoStatus && novoStatus != "0"){
-          try{
-            const response = await api.put(`/tarefas/${editItem._id}`, {"nome": novoNome, "dataprogramada": novoData, "status": novoStatus});
-            console.log(JSON.stringify(response.data));
-            await getTarefa()
-            setisModalVisible(false)
-          } catch (error) {
-            console.log("DEU RUIM" + error);
+          const dataAtual = new Date()
+          console.log(editItem.nome)
+          console.log(editItem.status)
+          console.log(editItem.dataprogramada)
+          const newDateValue = novoData.split('/')
+          const newDateDay = newDateValue[0]
+          const newDateMonth = newDateValue[1]
+          const newDateYear = newDateValue[2]
+          const newDate = new Date(`${newDateYear}/${newDateMonth}/${newDateDay}`)
+          dataAtual.setHours(0)
+          dataAtual.setSeconds(0)
+          dataAtual.setMinutes(0)
+          dataAtual.setMilliseconds(0)
+          if(newDate<dataAtual){
+            alert('Informe uma data válida.')
+          } else {
+            try{
+              const response = await api.put(`/tarefas/${editItem._id}`, {"nome": novoNome, "dataprogramada": novoData, "status": novoStatus});
+              console.log(JSON.stringify(response.data));
+              await getTarefa()
+              setisModalVisible(false)
+            } catch (error) {
+              console.log("DEU RUIM" + error);
           }
-        }else{
-          alert("Informe todos os campos")
         }
         
     }
@@ -96,7 +112,7 @@ const Lista = ({navigation}) => {
             <FlatList
             data={tarefas}
             renderItem={TextTarefa}
-            keyExtractor={ tarefa => tarefa.nome }
+            keyExtractor={ tarefa => tarefa._id }
             ></FlatList>
             <Modal animationType='fade'
                   visible={isModalVisible}
@@ -105,7 +121,7 @@ const Lista = ({navigation}) => {
               <View style={styles.modalView}>
                 <Text style={styles.text}> Edite a tarefa</Text>
                 <TextInput 
-                //value={novoNome}
+                value={editItem.nome}
                 onChangeText={item => {setNovoNome(item)}}
                 editable={true}
                 multiline={false}
@@ -119,12 +135,13 @@ const Lista = ({navigation}) => {
               format="DD/MM/YYYY"
               style={styles.dateComponente}
               onDateChange={changeDate}
-              date={novoData}
+              date={editItem.dataprogramada}
             />
             <Picker
-                selectedValue="Escolha o Status"
+                selectedValue={editItem.status}
                 onValueChange={definiStatus2}
                 style={{height: 100, width: 300}}
+                
             >
               <Picker.Item label="Defina o Status" value="0" />
               <Picker.Item label="Pendente" value="Pendente" />

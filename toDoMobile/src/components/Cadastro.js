@@ -11,15 +11,17 @@ import { TarefaContext } from '../TarefasContext';
 const Cadastro = ({navigation}) => {
 
     // const { name } = route.params;
-
+  const dataAtual = new Date()
+  const diaAtual = dataAtual.getDate()
+  const mesAtual = dataAtual.getMonth()
+  const anoAtual = dataAtual.getFullYear()
     const [nomeTarefa, setNomeTarefa] = useState("");
-    const [dataprogramada, setDataprogramada] = useState("");
+    const [dataprogramada, setDataprogramada] = useState(`${diaAtual}/${mesAtual}/${anoAtual}`);
     const [status, setStatus] = useState("");
     const {getTarefa} = useContext(TarefaContext)
 
     const changeDate2 = (valor) => {
-      setDataprogramada(valor)
-      console.log(dataprogramada)
+        setDataprogramada(valor)
       }
 
       const definiStatus = (valor) => {
@@ -29,9 +31,21 @@ const Cadastro = ({navigation}) => {
 
 
     const createTarefa = async () => {
-        if (nomeTarefa && dataprogramada && status && status != "0"){
+        const newDateValue = dataprogramada.split('/')
+        const newDateDay = newDateValue[0]
+        const newDateMonth = newDateValue[1]
+        const newDateYear = newDateValue[2]
+        const newDate = new Date(`${newDateYear}/${newDateMonth}/${newDateDay}`)
+        dataAtual.setHours(0)
+        dataAtual.setMinutes(0)
+        dataAtual.setSeconds(0)
+        dataAtual.setMilliseconds(0)
+        if(newDate<dataAtual){
+          alert('Informe uma data válida.')
+        }else{
+        if (nomeTarefa && dataprogramada){
           try{
-            const response = await api.post('/tarefas', {"nome": nomeTarefa, "dataprogramada": dataprogramada, "status": status});
+            const response = await api.post('/tarefas', {"nome": nomeTarefa, "dataprogramada": dataprogramada, "status": "Pendente"});
             console.log(JSON.stringify(response.data));
             await getTarefa()
             navigation.navigate('Home')
@@ -42,7 +56,7 @@ const Cadastro = ({navigation}) => {
           console.log("Vazio")
           alert("Informe todos os campos")
         }
-        
+      }
     }
     
       return(
@@ -58,17 +72,6 @@ const Cadastro = ({navigation}) => {
               onDateChange={changeDate2}
               date={dataprogramada}
             />
-
-            <Picker
-                selectedValue="Escolha o Status"
-                onValueChange={definiStatus}
-                style={{height: 100, width: 300}}
-            >
-              <Picker.Item label="Defina o Status" value="0" />
-              <Picker.Item label="Pendente" value="Pendente" />
-              <Picker.Item label="Finalizado" value="Finalizado" />
-            </Picker>
-
             {/*<TextInput placeholder="Data programada" placeholderTextColor="#000" style={styles.input} value={dataprogramada} onChangeText={item => {setDataprogramada(item)}} />*/}
             {/*<TextInput placeholder="Status" placeholderTextColor="#000" style={styles.input} value={status} onChangeText={item => {setStatus(item)}} />*/}
 
