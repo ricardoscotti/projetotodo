@@ -5,6 +5,7 @@ import {TarefaContext} from '../TarefasContext'
 
 import Datepicker from 'react-native-datepicker'
 import {Picker} from '@react-native-picker/picker'
+import { color } from 'react-native-reanimated';
 
 
 const Lista = ({navigation}) => {
@@ -92,7 +93,11 @@ const Lista = ({navigation}) => {
         return(
           <TouchableOpacity onPress={() => onPressItem(tarefa)}>
           <View style={styles.row}>
-            <Text>{tarefa.item.nome} - {tarefa.item.dataprogramada} - {tarefa.item.status} </Text>
+            {tarefa.item.status==='Finalizado'?
+            <Text style={{color:'black', fontSize: 20}}>{tarefa.item.nome} - {tarefa.item.dataprogramada} - <Text style={{color: 'green'}}>{tarefa.item.status}</Text></Text>
+            :tarefa.item.status==='Atrasado'?
+            <Text style={{color:'black', fontSize: 20}}>{tarefa.item.nome} - {tarefa.item.dataprogramada} - <Text style={{color: 'red'}}>{tarefa.item.status}</Text></Text>:
+            <Text style={{color:'black', fontSize: 20}}>{tarefa.item.nome} - {tarefa.item.dataprogramada} - <Text style={{color: 'yellow'}}>{tarefa.item.status}</Text></Text>}
           </View>
           </TouchableOpacity>
         )
@@ -109,7 +114,7 @@ const Lista = ({navigation}) => {
             </TouchableOpacity>
           </View>
             <Text style={styles.tituloLista}>Tarefas</Text>
-            <FlatList
+          <FlatList
             data={tarefas}
             renderItem={TextTarefa}
             keyExtractor={ tarefa => tarefa._id }
@@ -137,10 +142,10 @@ const Lista = ({navigation}) => {
               onDateChange={changeDate}
               date={novoData}
             />
-            <Picker
+            <Picker 
                 selectedValue={novoStatus}
                 onValueChange={definiStatus2}
-                style={{height: 100, width: 300}}
+                style={{height: 100, width: 200}}
                 
             >
               <Picker.Item label="Defina o Status" value="0" />
@@ -165,11 +170,11 @@ const Lista = ({navigation}) => {
                 style={styles.input}
                 placeholder="Status" placeholderTextColor="#000"
                 ></TextInput>*/}
-                <TouchableOpacity  style={styles.touchableSave} onPress={updateTarefa}>
-                  <Text style={styles.text}>Save</Text>
+                <TouchableOpacity  style={styles.button} onPress={updateTarefa}>
+                  <Text style={styles.buttonText}>Salvar</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={confirmaDelete}  style={styles.touchableSave}>
-                  <Text style={styles.text}>Apagar</Text>
+                <TouchableOpacity onPress={confirmaDelete}  style={styles.button}>
+                  <Text style={styles.buttonText}>Apagar</Text>
                 </TouchableOpacity>
               </View>
             </Modal>
@@ -181,11 +186,17 @@ const Lista = ({navigation}) => {
 const styles = StyleSheet.create({
   dateComponente: {
     width: 190,
-  },
+    backgroundColor: '#F8F8FF',
+    borderRadius: 10,
+    borderColor:"black",
+    },
     text:{
-      color:"#000",
+      color:"#F8F8FF",
       marginTop: 8,
-      fontWeight: 'bold'
+      fontSize: 35,
+      textShadowColor: 'rgba(0, 0, 0, 0.75)',
+      textShadowOffset: {width: -1, height: 1},
+      textShadowRadius: 10
     },
     touchableSave:{
       borderColor: '#00ff40',
@@ -201,7 +212,7 @@ const styles = StyleSheet.create({
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#CFCFCF'
+      backgroundColor: '#87CEEB'
     },
     row: {
       flex: 1,
@@ -209,8 +220,10 @@ const styles = StyleSheet.create({
       paddingHorizontal: 15,
       flexDirection: 'row',
       justifyContent: 'space-between',
-      borderBottomWidth: 1,
-      borderBottomColor: 'white'
+      fontSize: 60,
+      backgroundColor: '#77B8D1',
+      marginBottom: 10,
+      borderRadius: 10,
     },
     container: {
       flex: 1,
@@ -219,43 +232,57 @@ const styles = StyleSheet.create({
       alignContent: 'center',
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#CFCFCF'
+      backgroundColor: '#87CEEB',
+      
   
     },
     header: {
       fontSize: 42,
-      marginBottom: 15
+      marginBottom: 15,
+      color:"#F8F8FF",
+      textShadowColor: 'rgba(0, 0, 0, 0.75)',
+      textShadowOffset: {width: -1, height: 1},
+      textShadowRadius: 10,
+      
     },
     input:{
       width: 200,
       height: 40,
       marginVertical: 10,
-      borderColor:'black',
       borderWidth: 1,
-      borderRadius: 20,
       paddingLeft: 20,
-      color: '#000000'
+      fontWeight: 'bold',
+      backgroundColor: '#F8F8FF',
+      borderRadius: 10,
+      borderColor:"black",
+      color:"black",
     },
     button: {
-      borderColor: '#00ff40',
-      borderWidth: 1,
       borderRadius: 10,
-      backgroundColor: '#00ff40',
+      backgroundColor: '#77B8D1',
       width: 150,
       height: 40,
       alignItems: 'center',
       marginTop: 15,
+      
+      
     },
     buttonText:{
-      color:"#000",
+      color:"white",
       marginTop: 8,
-      fontWeight: 'bold'
+      fontWeight: 'bold',
+      textTransform: 'uppercase',
+      fontSize: 15
     },
     tituloLista:{
       fontSize: 25,
       marginTop: 30,
-      marginBottom: 20
-    }
+      marginBottom: 20,
+      color:"#F8F8FF",
+      textShadowColor: 'rgba(0, 0, 0, 0.75)',
+      textShadowOffset: {width: -1, height: 1},
+      textShadowRadius: 10
+    },
   });
 
 

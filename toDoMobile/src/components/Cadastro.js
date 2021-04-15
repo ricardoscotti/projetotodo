@@ -13,10 +13,10 @@ const Cadastro = ({navigation}) => {
     // const { name } = route.params;
   const dataAtual = new Date()
   const diaAtual = dataAtual.getDate()
-  const mesAtual = dataAtual.getMonth()
+  const mesAtual = dataAtual.getMonth()+1
   const anoAtual = dataAtual.getFullYear()
     const [nomeTarefa, setNomeTarefa] = useState("");
-    const [dataprogramada, setDataprogramada] = useState(`${diaAtual}/${mesAtual}/${anoAtual}`);
+    const [dataprogramada, setDataprogramada] = useState(`${diaAtual}/0${mesAtual}/${anoAtual}`);
     const [status, setStatus] = useState("");
     const {getTarefa} = useContext(TarefaContext)
 
@@ -89,6 +89,9 @@ const Cadastro = ({navigation}) => {
 const styles = StyleSheet.create({
     dateComponente: {
       width: 190,
+      backgroundColor: '#F8F8FF',
+      borderRadius: 10,
+      borderColor:"black"
     },
     container: {
       flex: 1,
@@ -97,37 +100,42 @@ const styles = StyleSheet.create({
       alignContent: 'center',
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: '#CFCFCF'
+      backgroundColor: '#87CEEB'
   
     },
     header: {
       fontSize: 42,
-      marginBottom: 15
+      marginBottom: 15,
+      color:"#F8F8FF",
+      textShadowColor: 'rgba(0, 0, 0, 0.75)',
+      textShadowOffset: {width: -1, height: 1},
+      textShadowRadius: 10
     },
     input:{
       width: 200,
       height: 40,
       marginVertical: 10,
+      fontWeight: 'bold',
       borderColor:'black',
       borderWidth: 1,
-      borderRadius: 20,
+      borderRadius: 10,
       paddingLeft: 20,
-      color: '#000000',
-      
+      color: 'black',
+      backgroundColor: '#F8F8FF'
       
     },
     button: {
-      borderColor: '#00ff40',
+      borderColor: 'black',
       borderWidth: 1,
       borderRadius: 10,
-      backgroundColor: '#00ff40',
+      backgroundColor: '#F8F8FF',
       width: 150,
       height: 40,
       alignItems: 'center',
       marginTop: 15,
     },
     buttonText:{
-      color:"#000",
+      color:"black",
       marginTop: 8,
       fontWeight: 'bold'
     },
@@ -143,6 +151,7 @@ const styles = StyleSheet.create({
       marginTop: 30,
       marginBottom: 20
     }
+    
   });
 
 

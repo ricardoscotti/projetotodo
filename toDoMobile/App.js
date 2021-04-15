@@ -17,7 +17,9 @@ const SecondApp = () => {
   return (
     <TarefaStorage>
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{
+          headerShown: false
+        }}>
           <Stack.Screen name="Home" component={Lista}/>
           <Stack.Screen name="Cadastro" component={Cadastro}/>
         </Stack.Navigator>
